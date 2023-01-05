@@ -6,34 +6,60 @@
       <div class="col-lg-4 mx-auto">
         <h2 class="text-center mb-4">Registro</h2>
         <div class="auto-form-wrapper">
-          <form action="#">
-            <div class="form-group">
-              <div class="input-group">
-                <input type="email" class="form-control" placeholder="Correo" />
-                <div class="input-group-append">
-                  <span class="input-group-text">
-                    <i class="fa fa-check-circle"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
+          <form action="#" [formGroup]="registerForm" (submit)="registerUser()">
             <div class="form-group">
               <div class="input-group">
                 <input
-                  type="password"
+                  type="text"
                   class="form-control"
-                  placeholder="Password"
+                  placeholder="Nombre"
+                  formControlName="name"
                 />
                 <div class="input-group-append">
                   <span class="input-group-text">
-                    <i class="fa fa-check-circle"></i>
+                    <i *ngIf="name?.valid" class="fa fa-check-circle"></i>
                   </span>
                 </div>
               </div>
             </div>
 
             <div class="form-group">
-              <button class="btn btn-primary submit-btn btn-block">
+              <div class="input-group">
+                <input
+                  type="email"
+                  class="form-control"
+                  placeholder="Correo"
+                  formControlName="email"
+                />
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <i *ngIf="email?.valid" class="fa fa-check-circle"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="input-group">
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Password"
+                  formControlName="password"
+                />
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <i *ngIf="password?.valid" class="fa fa-check-circle"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <button
+                [disabled]="registerForm.invalid"
+                class="btn btn-primary submit-btn btn-block"
+              >
                 Crear cuenta
               </button>
             </div>

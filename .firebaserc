@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "log-in-out-38400": {
+      "hosting": {
+        "log-in-out-app": [
+          "log-in-out-38400"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "log-in-out-38400"
+  }
+}
