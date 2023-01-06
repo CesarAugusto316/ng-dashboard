@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { User } from '../models/user.model';
-import { FirestoreError } from 'firebase/firestore';
+import { FirestoreError } from '@angular/fire/firestore';
+
+// ngrx/store
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.store';
+import * as authActions from '../auth/auth.actions'
 
 
 @Injectable({
@@ -11,19 +16,40 @@ import { FirestoreError } from 'firebase/firestore';
 })
 export class AuthService {
 
-  constructor(private fireAuth: AngularFireAuth, private fireStore: AngularFirestore) { }
+  constructor(
+    private fireAuth: AngularFireAuth,
+    private fireStore: AngularFirestore,
+    private ngRxStore: Store<AppState>
+  ) { }
+
+  fireSubscription!: Subscription;
 
   /**
    * 
-   * @description keeps track of userCredential state updates
+   * @description keeps track of userCredential authentication state updates
+   * and logs every change to the console.
    */
   initAuthListener(): void {
     this.fireAuth.authState.subscribe(user => {
-      console.log(user);
+      if (user) {
+        this.fireSubscription = this.fireStore
+          // 1. reading fireStore doc by uid and subscribing
+          .doc(`${user.uid}/user`).valueChanges()
+          .subscribe((doc: any) => {
+            // 2. dispatching action in the store
+            this.ngRxStore.dispatch(
+              authActions.setUser({ user: new User(user.uid, user?.email, doc.name) })
+            );
+          })
+      } else {
+        // 3. when loging out unSet the user from store and cancel any subscription
+        this.fireSubscription.unsubscribe();
+        this.ngRxStore.dispatch(authActions.unSetUser())
+      }
     })
   }
 
-  isAuth(): Observable<boolean> {
+  isAuthenticated(): Observable<boolean> {
     return this.fireAuth.authState.pipe(map(user => user ? true : false));
   }
 

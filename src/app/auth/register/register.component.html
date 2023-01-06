@@ -57,10 +57,17 @@
 
             <div class="form-group">
               <button
-                [disabled]="registerForm.invalid"
+                [disabled]="registerForm.invalid || isLoading"
                 class="btn btn-primary submit-btn btn-block"
               >
-                Crear cuenta
+                <span *ngIf="isLoading; else singUp">
+                  <span>Loading </span>
+                  <i class="fa fa-spin fa-sync"></i>
+                </span>
+
+                <ng-template #singUp>
+                  <span>Crear cuenta</span>
+                </ng-template>
               </button>
             </div>
             <div class="text-block text-center my-3">

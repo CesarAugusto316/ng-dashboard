@@ -1,28 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { AuthError } from 'firebase/auth';
 import Swal from 'sweetalert2';
 
+// ngrx/store
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.store';
+import * as uiActions from '../../shared/ui.actions'
+
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit, OnDestroy {
 
   registerForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.min(10_000_000)]]
   })
+  isLoading = false;
+  uiSubscription!: Subscription;
 
   constructor(
     private fb: NonNullableFormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>,
   ) { }
+
+  ngOnInit(): void {
+    this.uiSubscription = this.store.select('ui').subscribe(({ isLoading }) => {
+      this.isLoading = isLoading;
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.uiSubscription.unsubscribe()
+  }
 
   get name() {
     return this.registerForm.get('name')
@@ -41,27 +60,24 @@ export class RegisterComponent {
       return
     }
     else {
-      Swal.fire({
-        text: 'Please wait',
-        didOpen: () => {
-          Swal.showLoading(null)
-        }
-      })
+      this.store.dispatch(uiActions.startLoading())
+
       try {
         const { email, name, password } = this.registerForm.value
         await this.authService.createUser({ name, email, password })
-        Swal.close();
+        this.registerForm.reset();
         this.router.navigateByUrl('/')
       }
-      catch (error) {
+      catch (err) {
         Swal.fire({
           icon: 'error',
           title: 'Oops',
-          text: (error as AuthError).message,
+          text: (err as AuthError).message,
         })
+        console.log(err);
       }
       finally {
-        this.registerForm.reset();
+        this.store.dispatch(uiActions.stopLoading())
       }
     }
   }
