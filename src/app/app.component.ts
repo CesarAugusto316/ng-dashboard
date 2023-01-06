@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from './services/auth.service';
 
 
 @Component({
@@ -7,5 +8,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'log-in-out-app';
+
+  constructor(private authService: AuthService) {
+    this.authService.initAuthListener();
+  }
 }

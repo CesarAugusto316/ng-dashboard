@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { AuthError } from 'firebase/auth';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -39,14 +41,24 @@ export class RegisterComponent {
       return
     }
     else {
+      Swal.fire({
+        text: 'Please wait',
+        didOpen: () => {
+          Swal.showLoading(null)
+        }
+      })
       try {
         const { email, name, password } = this.registerForm.value
-        const res = await this.authService.createUser({ name, email, password })
+        await this.authService.createUser({ name, email, password })
+        Swal.close();
         this.router.navigateByUrl('/')
-        console.log(res);
       }
       catch (error) {
-        console.log(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops',
+          text: (error as AuthError).message,
+        })
       }
       finally {
         this.registerForm.reset();

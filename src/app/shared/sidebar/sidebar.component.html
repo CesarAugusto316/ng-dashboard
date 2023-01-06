@@ -1,3 +1,8 @@
+<style>
+  .cursor {
+    cursor: pointer;
+  }
+</style>
 <nav class="sidebar sidebar-offcanvas">
   <ul class="nav">
     <li class="nav-item nav-profile">
@@ -39,7 +44,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link cursor" routerLink="/login">
+      <a class="nav-link cursor" (click)="onLogOut()">
         <i class="menu-icon fa fa-sign-out-alt"></i>
         <span class="menu-title">Cerrar sesión</span>
       </a>

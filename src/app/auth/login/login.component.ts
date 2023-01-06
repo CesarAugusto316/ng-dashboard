@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { AuthError } from 'firebase/auth';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -29,21 +31,31 @@ export class LoginComponent {
     return this.loginForm.get('password')
   }
 
-  async logUser(): Promise<void> {
+  async onLogUserIn(): Promise<void> {
     if (this.loginForm.invalid) {
       return
     }
+    Swal.fire({
+      text: 'Please wait',
+      didOpen: () => {
+        Swal.showLoading(null)
+      }
+    })
     try {
       const { email, password } = this.loginForm.value
-      this.authService.logUser({ email, password })
+      await this.authService.logUserIn({ email, password })
+      Swal.close();
       this.router.navigateByUrl('/')
     }
     catch (error) {
-      console.log(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops',
+        text: (error as AuthError).message,
+      })
     }
     finally {
       this.loginForm.reset()
-      console.log(this.loginForm.value);
     }
   }
 }

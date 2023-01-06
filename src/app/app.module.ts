@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms'
 // router
 import { AppRoutingModule } from './app-routing.module';
 
+// components
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
@@ -18,11 +19,6 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
 
 // firebase
 import { environment } from '../environments/environment';
-// import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-// import { provideAuth, getAuth } from '@angular/fire/auth';
-// import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-// import { SETTINGS as AUTH_SETTINGS } from '@angular/fire/compat/auth';
-// import { USE_DEVICE_LANGUAGE } from '@angular/fire/compat/auth';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
@@ -48,11 +44,8 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule
-    // provideFirebaseApp(() => initializeApp(environment.firebase)),
-    // provideAuth(() => getAuth()),
-    // provideFirestore(() => getFirestore())
   ],
-  // providers: [{ provide: AUTH_SETTINGS, useValue: { appVerificationDisabledForTesting: true } }, { provide: USE_DEVICE_LANGUAGE, useValue: true },],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
