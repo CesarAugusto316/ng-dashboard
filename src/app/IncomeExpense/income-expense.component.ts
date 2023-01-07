@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import { AppState } from '../app.store';
 import { IncomeExpense } from '../models/incomeExpenses.model';
 import { User } from '../models/user.model';
-import { IncomeExpenseService } from '../services/income-expense.service';
+import { IncomeExpenseService } from '../services/incomeExpense.service';
 
 
 type IncomeExpenseType = 'income' | 'expense'
@@ -62,7 +62,9 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
         }
       })
       const { amount, description } = this.incomeExpenseForm.value
-      const newItem = new IncomeExpense(description, amount, this.hasIncomeOrExpense(), this.user?.id);
+      const newItem = new IncomeExpense(
+        description, amount, this.hasIncomeOrExpense(), this.user?.id
+      );
 
       try {
         await this.incoExService.createIncomeExpense(newItem);

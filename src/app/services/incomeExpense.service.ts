@@ -10,7 +10,7 @@ export class IncomeExpenseService {
 
   constructor(private firestore: AngularFirestore) { }
 
-  createIncomeExpense(incomeExpense: IncomeExpense) {
+  async createIncomeExpense(incomeExpense: IncomeExpense) {
     return this.firestore
       .doc(`${incomeExpense.uid}/income-expense`)
       .collection('items')
