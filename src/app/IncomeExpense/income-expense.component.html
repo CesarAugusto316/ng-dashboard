@@ -55,12 +55,19 @@
           <hr />
 
           <button
-            [disabled]="incomeExpenseForm.invalid"
+            [disabled]="incomeExpenseForm.invalid || isLoading"
             type="submit"
             class="btn btn-success mr-2"
           >
-            <i class="fa fa-save"></i>
-            Agregar
+            <span *ngIf="isLoading; else login">
+              <span>Loading </span>
+              <i class="fa fa-spin fa-sync"></i>
+            </span>
+
+            <ng-template #login>
+              <i class="fa fa-save"></i>
+              <span> Agregar </span>
+            </ng-template>
           </button>
 
           <!-- 

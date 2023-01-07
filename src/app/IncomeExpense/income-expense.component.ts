@@ -1,13 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { AuthError } from '@firebase/auth';
-import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
-import { AppState } from '../app.store';
+
+// models
 import { IncomeExpense } from '../models/incomeExpenses.model';
 import { User } from '../models/user.model';
+
+// services|actions
 import { IncomeExpenseService } from '../services/incomeExpense.service';
+import * as uiActions from '../shared/ui.actions'
+
+// store
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+import { AppState } from '../app.store';
 
 
 type IncomeExpenseType = 'income' | 'expense'
@@ -23,8 +30,11 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
     amount: ['', [Validators.required, Validators.min(1_000)]],
   })
   toggleIncomeExpense = true;
+  isLoading = false;
+
   private user!: User | null;
-  private userSubscription!: Subscription;
+  private storeSubscription!: Subscription;
+
 
   constructor(
     private fb: NonNullableFormBuilder,
@@ -32,14 +42,16 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
     private incoExService: IncomeExpenseService
   ) { }
 
+
   ngOnInit(): void {
-    this.userSubscription = this.store.select('auth').subscribe(({ user }) => {
-      this.user = user;
+    this.storeSubscription = this.store.subscribe(({ auth, ui }) => {
+      this.user = auth.user;
+      this.isLoading = ui.isLoading
     })
   }
 
   ngOnDestroy(): void {
-    this.userSubscription.unsubscribe()
+    this.storeSubscription.unsubscribe();
   }
 
   onToogleIncomeExpense(): void {
@@ -50,17 +62,14 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
     return this.toggleIncomeExpense ? 'income' : 'expense'
   }
 
+
   async onSave(): Promise<void> {
     if (this.incomeExpenseForm.invalid) {
       return
     }
     else {
-      Swal.fire({
-        title: 'Saving...',
-        didOpen: () => {
-          Swal.showLoading(null)
-        }
-      })
+      this.store.dispatch(uiActions.startLoading())
+
       const { amount, description } = this.incomeExpenseForm.value
       const newItem = new IncomeExpense(
         description, amount, this.hasIncomeOrExpense(), this.user?.id
@@ -72,10 +81,10 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
           icon: 'success',
           title: 'Saved',
           text: `${newItem.type} successfully added`,
-          timer: 1_600
+          timer: 2_400
         })
-        this.incomeExpenseForm.reset()
         // TODO: here we should dispatch an action into the store
+        this.incomeExpenseForm.reset();
       }
       catch (err) {
         Swal.fire({
@@ -83,6 +92,9 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
           title: 'Oops',
           text: (err as AuthError).message,
         })
+      }
+      finally {
+        this.store.dispatch(uiActions.stopLoading());
       }
     }
   }

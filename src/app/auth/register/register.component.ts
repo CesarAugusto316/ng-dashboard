@@ -24,6 +24,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     password: ['', [Validators.required, Validators.min(10_000_000)]]
   })
   isLoading = false;
+
   private uiSubscription!: Subscription;
 
   constructor(

@@ -19,7 +19,7 @@ export class AuthService {
   constructor(
     private fireAuth: AngularFireAuth,
     private fireStore: AngularFirestore,
-    private ngRxStore: Store<AppState>
+    private store: Store<AppState>
   ) { }
 
   /**
@@ -37,7 +37,7 @@ export class AuthService {
           .doc<User>(`${user.uid}/user`).valueChanges().pipe(take(1))
           .subscribe((doc: any) => {
             // 2. dispatching action in the store and setting user
-            this.ngRxStore.dispatch(
+            this.store.dispatch(
               authActions.setUser(
                 { user: new User(user.uid, user.email, doc?.name) }
               )
@@ -45,7 +45,7 @@ export class AuthService {
           })
       } // sign-out
       else {
-        this.ngRxStore.dispatch(authActions.unSetUser())
+        this.store.dispatch(authActions.unSetUser())
       }
     })
   }
