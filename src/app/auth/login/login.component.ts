@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     password: ['', [Validators.required, Validators.min(10_000_000)]]
   })
   isLoading = false;
-  uiSubscription!: Subscription;
+  private uiSubscription!: Subscription;
 
   constructor(
     private fb: NonNullableFormBuilder,
@@ -56,9 +56,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
     else {
       this.store.dispatch(uiActions.startLoading())
+      const { email, password } = this.loginForm.value
 
       try {
-        const { email, password } = this.loginForm.value
         await this.authService.logUserIn({ email, password })
         this.loginForm.reset()
         this.router.navigateByUrl('/')
@@ -69,7 +69,6 @@ export class LoginComponent implements OnInit, OnDestroy {
           title: 'Oops',
           text: (err as AuthError).message,
         })
-        console.log(err);
       }
       finally {
         this.store.dispatch(uiActions.stopLoading())

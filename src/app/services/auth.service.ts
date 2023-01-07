@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { map, Observable, Subscription } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 import { User } from '../models/user.model';
 import { FirestoreError } from '@angular/fire/firestore';
 
@@ -22,36 +22,42 @@ export class AuthService {
     private ngRxStore: Store<AppState>
   ) { }
 
-  fireSubscription!: Subscription;
-
   /**
    * 
-   * @description keeps track of userCredential authentication state updates
-   * and logs every change to the console.
+   * @description keeps track of user authentication state updates
+   * and is in sync with the ngrxStore.
    */
-  initAuthListener(): void {
-    this.fireAuth.authState.subscribe(user => {
+  initAuthObserver(): void {
+    // fires on user sign-in/up/out
+    this.fireAuth.authState.subscribe((user) => {
+      // sign-in/up
       if (user) {
-        this.fireSubscription = this.fireStore
-          // 1. reading fireStore doc by uid and subscribing
-          .doc(`${user.uid}/user`).valueChanges()
+        this.fireStore
+          // 1. reading fireStore collection by doc.uid
+          .doc<User>(`${user.uid}/user`).valueChanges().pipe(take(1))
           .subscribe((doc: any) => {
-            // 2. dispatching action in the store
+            // 2. dispatching action in the store and setting user
             this.ngRxStore.dispatch(
-              authActions.setUser({ user: new User(user.uid, user?.email, doc.name) })
+              authActions.setUser(
+                { user: new User(user.uid, user.email, doc?.name) }
+              )
             );
           })
-      } else {
-        // 3. when loging out unSet the user from store and cancel any subscription
-        this.fireSubscription.unsubscribe();
+      } // sign-out
+      else {
         this.ngRxStore.dispatch(authActions.unSetUser())
       }
     })
   }
 
+  /**
+   * 
+   * @description can be consumed by other services like auth.guard
+   */
   isAuthenticated(): Observable<boolean> {
     return this.fireAuth.authState.pipe(map(user => user ? true : false));
   }
+
 
   async createUser(user: { name?: string, email?: string, password?: string }) {
     try {
@@ -62,13 +68,14 @@ export class AuthService {
       const newUser = new User(res.user?.uid as string, user.name as string, user.email as string);
 
       // 2. stores the user data in firebase
-      await this.fireStore.doc(`${newUser.userId}/user`).set({ ...newUser });
+      await this.fireStore.doc(`${newUser.id}/user`).set({ ...newUser });
       return Promise.resolve(newUser)
     }
     catch (err) {
       return Promise.reject(err as FirestoreError)
     }
   }
+
 
   async logUserIn(user: { email?: string, password?: string }) {
     return new Promise((resolve, reject) => {
@@ -78,6 +85,7 @@ export class AuthService {
         .catch((err) => reject(err))
     })
   }
+
 
   async logOut() {
     return this.fireAuth.signOut();

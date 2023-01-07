@@ -10,9 +10,9 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { LogInOutComponent } from './log-in-out/log-in-out.component';
-import { StatisticsComponent } from './log-in-out/statistics/statistics.component';
-import { DetailComponent } from './log-in-out/detail/detail.component';
+import { IncomeExpenseComponent } from './IncomeExpense/income-expense.component';
+import { StatisticsComponent } from './IncomeExpense/statistics/statistics.component';
+import { DetailComponent } from './IncomeExpense/detail/detail.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
@@ -35,7 +35,7 @@ import { appReducers } from './app.store'
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
-    LogInOutComponent,
+    IncomeExpenseComponent,
     StatisticsComponent,
     DetailComponent,
     FooterComponent,

@@ -24,7 +24,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     password: ['', [Validators.required, Validators.min(10_000_000)]]
   })
   isLoading = false;
-  uiSubscription!: Subscription;
+  private uiSubscription!: Subscription;
 
   constructor(
     private fb: NonNullableFormBuilder,
@@ -34,9 +34,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.uiSubscription = this.store.select('ui').subscribe(({ isLoading }) => {
-      this.isLoading = isLoading;
-    })
+    this.uiSubscription =
+      this.store.select('ui').subscribe(({ isLoading }) => {
+        this.isLoading = isLoading;
+      })
   }
 
   ngOnDestroy(): void {
@@ -61,9 +62,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
     else {
       this.store.dispatch(uiActions.startLoading())
+      const { email, name, password } = this.registerForm.value
 
       try {
-        const { email, name, password } = this.registerForm.value
         await this.authService.createUser({ name, email, password })
         this.registerForm.reset();
         this.router.navigateByUrl('/')
@@ -74,7 +75,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
           title: 'Oops',
           text: (err as AuthError).message,
         })
-        console.log(err);
       }
       finally {
         this.store.dispatch(uiActions.stopLoading())
