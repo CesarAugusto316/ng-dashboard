@@ -8,7 +8,8 @@ import { FirestoreError } from '@angular/fire/firestore';
 // ngrx/store
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.store';
-import * as authActions from '../auth/auth.actions'
+import * as authActions from '../auth/auth.actions';
+// import { IncomeExpenseService } from './incomeExpense.service';
 
 
 @Injectable({
@@ -19,7 +20,7 @@ export class AuthService {
   constructor(
     private fireAuth: AngularFireAuth,
     private fireStore: AngularFirestore,
-    private store: Store<AppState>
+    private store: Store<AppState>,
   ) { }
 
   /**
@@ -44,9 +45,9 @@ export class AuthService {
             );
           })
       } // sign-out
-      else {
-        this.store.dispatch(authActions.unSetUser())
-      }
+      // else {
+      //   this.store.dispatch(authActions.unSetUser());
+      // }
     })
   }
 

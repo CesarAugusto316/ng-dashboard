@@ -77,6 +77,7 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
 
       try {
         await this.incoExService.createIncomeExpense(newItem);
+
         Swal.fire({
           icon: 'success',
           title: 'Saved',
