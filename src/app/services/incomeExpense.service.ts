@@ -1,15 +1,9 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, } from '@angular/core';
 import { IncomeExpense } from '../models/incomeExpenses.model';
 
 // fireStore
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-
-// ngrxStore
-import { Store } from '@ngrx/store';
-import { AppState } from '../app.store';
-import * as inExsActions from '../incomeExpense/income-expense.actions'
-// import { AuthService } from './auth.service';
-import { filter, pipe, Subscription, take } from 'rxjs';
+import { map } from 'rxjs';
 
 
 @Injectable({
@@ -19,23 +13,29 @@ export class IncomeExpenseService {
 
   constructor(
     private firestore: AngularFirestore,
-    private store: Store<AppState>,
-    // private authService: AuthService
   ) { }
 
-  async createIncomeExpense(incomeExpense: IncomeExpense) {
+  async addIncomeExpense(incomeExpense: IncomeExpense) {
     return this.firestore
-      .doc(`${incomeExpense.uid}/income-expense`)
+      .doc(`${incomeExpense.docId}/income-expense`)
       .collection('items')
       .add({ ...incomeExpense })
   }
 
-  initObserver(uid: string): Subscription {
+  initObserver(uid: string) {
     return this.firestore
       .collection<IncomeExpense>(`${uid}/income-expense/items`)
-      .valueChanges()
-      .subscribe(items => {
-        this.store.dispatch(inExsActions.setItems({ items }))
-      })
+      .snapshotChanges()
+      .pipe(
+        map(snapShot => snapShot.map(doc => {
+          return {
+            docId: doc.payload.doc.id,
+            ...doc.payload.doc.data()
+          }
+        })))
+  }
+
+  remove(docId?: string, userID?: string): void {
+    this.firestore.doc(`${userID}/income-expense/items/${docId}`).delete()
   }
 }
