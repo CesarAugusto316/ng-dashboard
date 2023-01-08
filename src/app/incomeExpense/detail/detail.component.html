@@ -15,13 +15,19 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let item of incomeExpenses">
-              <td>{{ item.description }}</td>
+            <tr *ngFor="let item of incomeExpenses | orderInExps">
+              <td>{{ item.description | titlecase }}</td>
               <td>{{ item.amount | currency }}</td>
-              <td>{{ item.type }}</td>
+              <td
+                [ngClass]="
+                  item.type === 'income' ? 'text-success' : 'text-warning'
+                "
+              >
+                {{ item.type | titlecase }}
+              </td>
               <td>
                 <button
-                  (click)="remove(item.docId)"
+                  (click)="removeItem(item.docId)"
                   type="button"
                   class="btn btn-danger"
                 >

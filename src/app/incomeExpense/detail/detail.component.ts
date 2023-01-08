@@ -14,14 +14,18 @@ import { IncomeExpenseService } from 'src/app/services/incomeExpense.service';
 export class DetailComponent implements OnInit, OnDestroy {
   incomeExpenses!: IncomeExpense[];
   user!: User | null;
+
   private inExsSubs!: Subscription;
 
-  constructor(private store: Store<AppState>, private inExService: IncomeExpenseService) { }
+  constructor(
+    private store: Store<AppState>,
+    private inExService: IncomeExpenseService
+  ) { }
 
   ngOnInit(): void {
     this.inExsSubs = this.store.subscribe(({ incomExpenses, auth }) => {
-      this.incomeExpenses = incomExpenses.items
-      this.user = auth.user
+      this.incomeExpenses = incomExpenses.items;
+      this.user = auth.user;
     })
   }
 
@@ -29,8 +33,7 @@ export class DetailComponent implements OnInit, OnDestroy {
     this.inExsSubs.unsubscribe()
   }
 
-  remove(docId?: string) {
-    this.inExService.remove(docId, this.user?.id)
-    console.log(docId);
+  removeItem(docId?: string): void {
+    this.inExService.removeIcomeExpense(docId, this.user?.id)
   }
 }

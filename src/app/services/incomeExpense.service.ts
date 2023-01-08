@@ -1,9 +1,9 @@
 import { Injectable, } from '@angular/core';
 import { IncomeExpense } from '../models/incomeExpenses.model';
+import { map } from 'rxjs';
 
 // fireStore
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { map } from 'rxjs';
 
 
 @Injectable({
@@ -22,6 +22,11 @@ export class IncomeExpenseService {
       .add({ ...incomeExpense })
   }
 
+  /**
+   * 
+   * @@description watches updates in fireStore and will return 
+   * to our client the latest snapshot.
+   */
   initObserver(uid: string) {
     return this.firestore
       .collection<IncomeExpense>(`${uid}/income-expense/items`)
@@ -29,13 +34,13 @@ export class IncomeExpenseService {
       .pipe(
         map(snapShot => snapShot.map(doc => {
           return {
-            docId: doc.payload.doc.id,
-            ...doc.payload.doc.data()
+            ...doc.payload.doc.data(),
+            docId: doc.payload.doc.id
           }
         })))
   }
 
-  remove(docId?: string, userID?: string): void {
+  removeIcomeExpense(docId?: string, userID?: string): void {
     this.firestore.doc(`${userID}/income-expense/items/${docId}`).delete()
   }
 }

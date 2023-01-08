@@ -26,7 +26,8 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 // ngrx
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { appReducers } from './app.store'
+import { appReducers } from './app.store';
+import { OrderInExpsPipe } from './pipes/order-in-exps.pipe'
 
 
 @NgModule({
@@ -40,7 +41,8 @@ import { appReducers } from './app.store'
     DetailComponent,
     FooterComponent,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    OrderInExpsPipe
   ],
   imports: [
     BrowserModule,

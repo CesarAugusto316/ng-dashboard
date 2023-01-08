@@ -21,14 +21,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) { }
 
 
+  /**
+   * 
+   * @description each time the collection/doc in firebase is updated
+   * will notify the obserser which will fire and action on the ngrx store
+   */
   ngOnInit(): void {
-
     this.userSubscription = this.store.select('auth')
       .pipe(filter(user => user !== null))
       .subscribe(({ user }) => {
 
         this.itemsSubscription = this.inExService.initObserver(user?.id as string)
-          .subscribe(items => {
+          .subscribe((items) => {
             this.store.dispatch(inExsActions.setItems({ items }))
           })
       })

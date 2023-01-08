@@ -84,7 +84,6 @@ export class IncomeExpenseComponent implements OnInit, OnDestroy {
           text: `${newItem.type} successfully added`,
           timer: 2_400
         })
-        // TODO: here we should dispatch an action into the store
         this.incomeExpenseForm.reset();
       }
       catch (err) {
