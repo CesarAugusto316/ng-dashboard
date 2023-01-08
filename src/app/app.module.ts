@@ -1,21 +1,8 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms'
-
-// router
-import { AppRoutingModule } from './app-routing.module';
 
 // components
 import { AppComponent } from './app.component';
-import { LoginComponent } from './auth/login/login.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { IncomeExpenseComponent } from './incomeExpense/income-expense.component';
-import { StatisticsComponent } from './incomeExpense/statistics/statistics.component';
-import { DetailComponent } from './incomeExpense/detail/detail.component';
-import { FooterComponent } from './shared/footer/footer.component';
-import { NavbarComponent } from './shared/navbar/navbar.component';
-import { SidebarComponent } from './shared/sidebar/sidebar.component';
 
 // firebase
 import { environment } from '../environments/environment';
@@ -27,32 +14,29 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { appReducers } from './app.store';
-import { OrderInExpsPipe } from './pipes/order-in-exps.pipe'
+
+// feature modules
+import { AppRoutingModule } from './app-routing.module';
+import { AuthModule } from './auth/auth.module';
+import { IncomeExpenseModule } from './incomeExpense/income-expense.module';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    RegisterComponent,
-    DashboardComponent,
-    IncomeExpenseComponent,
-    StatisticsComponent,
-    DetailComponent,
-    FooterComponent,
-    NavbarComponent,
-    SidebarComponent,
-    OrderInExpsPipe
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
     StoreModule.forRoot(appReducers),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+
+    // feature modules
+    AppRoutingModule,
+    AuthModule,
+    // IncomeExpenseModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
